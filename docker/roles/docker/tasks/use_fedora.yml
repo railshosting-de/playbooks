@@ -1,0 +1,49 @@
+---
+# https://docs.docker.com/engine/install/centos/
+
+
+- name: ensure a list of packages uninstalled
+  dnf:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-selinux
+      - docker-engine-selinux
+      - docker-engine
+    state: absent
+  become: yes
+
+- name: Add docker-ce repo
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable - $basearch
+    baseurl: https://download.docker.com/linux/fedora/$releasever/$basearch/stable
+    gpgkey: https://download.docker.com/linux/fedora/gpg
+    gpgcheck: yes
+    enabled: yes
+
+- name: install docker-ce
+  dnf:
+    name: 
+      - docker-ce 
+      - docker-ce-cli 
+      - containerd.io
+    update_cache: true
+    state: latest  
+  become: yes
+
+- name: make sure a docker is running
+  systemd:
+    name: docker
+    state: started
+
+- name: adding existing user '{{ ansible_user }}' to group docker
+  user:
+    name: '{{ ansible_user }}'
+    groups: docker
+    append: yes

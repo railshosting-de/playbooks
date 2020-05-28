@@ -1,0 +1,4 @@
+---
+
+- include_tasks: use_fedora.yml
+  when: ansible_facts['distribution'] == "Fedora" and ansible_facts['distribution_version']|int == 31
